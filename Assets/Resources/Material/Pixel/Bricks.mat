@@ -45,7 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Bits: 16
+    - _Bits: 32
     - _DstBlend: 0
     - _QueueControl: 1
     - _SrcBlend: 1

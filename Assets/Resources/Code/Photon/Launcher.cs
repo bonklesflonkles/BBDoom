@@ -5,6 +5,7 @@ using Photon.Pun;
 using TMPro;
 using Photon.Realtime;
 using System.Linq;
+using UnityEngine.UI;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -24,6 +25,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     [SerializeField] TMP_InputField UserNameInput;
     [SerializeField] AudioSource song;
+    [SerializeField] Slider volumeSlide;
     private void Awake()
     {
         Instance = this;
@@ -31,7 +33,45 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        if (PlayerPrefs.HasKey("username"))
+            LoadName(); 
+
+        if (PlayerPrefs.HasKey("soundVol"))
+            LoadVol();
+        else
+        {
+            PlayerPrefs.SetFloat("soundVol", 1);
+            LoadVol();
+        }
+        if (PhotonNetwork.IsConnected)
+        {
+            MenuManager.instance.OpenMenu("TitleScreen");
+            return;
+        }
         PhotonNetwork.ConnectUsingSettings();
+    }
+
+    public void SetVolume()
+    {
+        AudioListener.volume = volumeSlide.value;
+        SaveVolume();
+    }
+
+    public void SaveVolume()
+    {
+        PlayerPrefs.SetFloat("soundVol", volumeSlide.value);
+    }
+
+    public void LoadVol()
+    {
+        volumeSlide.value = PlayerPrefs.GetFloat("soundVol");
+    }
+
+    public void LoadName()
+    {
+        PhotonNetwork.NickName = PlayerPrefs.GetString("username");
     }
 
     public override void OnConnectedToMaster()

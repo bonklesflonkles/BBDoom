@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 public class MonsterNavigation : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class MonsterNavigation : MonoBehaviour
     public NavMeshAgent agent;
     public Transform[] points;
     public string tagString = "Player";
+
+    public bool angel;
 
     GameObject _player;
     private void Start()
@@ -30,6 +33,7 @@ public class MonsterNavigation : MonoBehaviour
             GameObject[] players = GameObject.FindGameObjectsWithTag(tagString);
 
             GameObject target = null;
+        
 
             // Set the target to the closest player
             if (players.Length > 0)
@@ -43,9 +47,8 @@ public class MonsterNavigation : MonoBehaviour
                         minDistance = distance;
                         target = player;
                     }
-                    _player = player;
+                    _player = player;        
                 }
-
 
                 if (target != null)
                 {
@@ -59,12 +62,17 @@ public class MonsterNavigation : MonoBehaviour
                     Wander();
                 }
             }
+            else if (players.Length <= 0)
+            {
+                SceneManager.LoadScene(0);
+            }
 
             // If we have a target, set the NavMeshAgent's destination to the target's position
             if (target != null)
             {
                 agent.destination = target.transform.position;
             }
+
         }
         else
         {
@@ -87,7 +95,7 @@ public class MonsterNavigation : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
-    {
+    {    
         var p = other.gameObject.GetComponent<FPSController>();
         if (other.gameObject.CompareTag("Player"))
         {

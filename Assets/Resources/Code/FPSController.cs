@@ -21,22 +21,21 @@ public class FPSController : MonoBehaviour
     float rotationX = 0;
 
     public bool canMove = true;
+    bool destroyed;
     bool dying;
     CharacterController characterController;
+
+    public GameObject CameraSystem;
     void Start()
     {
+        destroyed = false;
         dying = false;
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        
 
-        if (!PV.IsMine)
-        {
-            Destroy(GetComponentInChildren<Camera>().gameObject);
-            Destroy(GameObject.FindGameObjectWithTag("Respawn"));
-
-        }
+        CameraSystem = GameObject.FindGameObjectWithTag("CamSystem");
+        CameraSystem.SetActive(false);  
     }
     private void Awake()
     {
@@ -44,8 +43,12 @@ public class FPSController : MonoBehaviour
     }
     void Update()
     {
-        if(!PV.IsMine)
-            return;
+        if (!PV.IsMine) { 
+            if (destroyed) return;
+            Destroy(GetComponentInChildren<Camera>().gameObject);
+            destroyed = true;
+
+        return; }
 
         #region Handles Movment
         Vector3 forward = transform.TransformDirection(Vector3.forward);
@@ -91,7 +94,7 @@ public class FPSController : MonoBehaviour
 
         if (!dying)
         {
-            Destroy(GameObject.FindGameObjectWithTag("Respawn"));
+            CameraSystem.SetActive(false);
         }
     }
 
@@ -99,7 +102,7 @@ public class FPSController : MonoBehaviour
     {
         dying = true;
         PhotonNetwork.Instantiate(Path.Combine("Prefabs", "Player", "deathP"), transform.position, Quaternion.identity);
-        PhotonNetwork.Instantiate(Path.Combine("Prefabs", "Player", "FreeCam"), transform.position, Quaternion.identity);
+        CameraSystem.SetActive(true);
         PhotonNetwork.Destroy(gameObject);
     }
 

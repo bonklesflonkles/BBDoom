@@ -16,7 +16,7 @@ public class FreeCam : MonoBehaviour
     {
         if (instance)
         {
-            Destroy(gameObject.GetComponent<Camera>());
+            Destroy(gameObject);
             return;
         }
         instance = this;
@@ -24,6 +24,8 @@ public class FreeCam : MonoBehaviour
 
     void Update()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         if (Input.GetMouseButton(1)) //if we are holding right click
         {
             Movement();
